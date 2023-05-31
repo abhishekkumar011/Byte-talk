@@ -48,6 +48,12 @@
   
   .sidebarChat-container {
     background-color: #fff;
+    overflow-y: scroll;
+    height: 82%;
+  }
+
+  .sidebarChat-container::-webkit-scrollbar {
+    display: none;
   }
   
   .sidebar-chat {

@@ -11,13 +11,15 @@ import db from "../firebase";
 const Sidebar = () => {
   const [rooms, setRooms] = useState([]);
   useEffect(() => {
-    db.collection("rooms").onSnapshot(snapshot => {
-      setRooms(snapshot.docs.map(doc => ({
-        id: doc.id,
-        data: doc.data()
-      })))
-    })
-  },[])
+    db.collection("rooms").onSnapshot((snapshot) => {
+      setRooms(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      );
+    });
+  }, []);
 
   return (
     <div className="sidebar">
@@ -48,11 +50,11 @@ const Sidebar = () => {
       {/* Sidebar chat container  */}
       <div className="sidebarChat-container">
         <SidebarChat addnewchat />
-        {
-          rooms.map(room => {
-            return <SidebarChat key={room.id} id={room.id} name={room.data.name}/>
-          })
-        }
+        {rooms.map((room) => {
+          return (
+            <SidebarChat key={room.id} id={room.id} name={room.data.name} />
+          );
+        })}
       </div>
     </div>
   );

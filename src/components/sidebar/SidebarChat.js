@@ -1,6 +1,7 @@
 import { Avatar } from "@mui/material";
 import "./sidebar.css";
 import { useEffect, useState } from "react";
+import db from "../firebase";
 
 const SidebarChat = ({ id, name, addnewchat }) => {
   const [seed, setSeed] = useState("");
@@ -8,6 +9,15 @@ const SidebarChat = ({ id, name, addnewchat }) => {
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
   }, []);
+
+  const createChat = () => {
+    const room = prompt("Enter the room name.");
+    if (room) {
+      db.collection("rooms").add({
+        name: room,
+      });
+    }
+  };
 
   return !addnewchat ? (
     <div className="sidebar-chat">
@@ -18,7 +28,7 @@ const SidebarChat = ({ id, name, addnewchat }) => {
       </div>
     </div>
   ) : (
-    <div className="sidebar-chat">
+    <div className="sidebar-chat" onClick={createChat}>
       <h2>Add new chat</h2>
     </div>
   );
