@@ -8,18 +8,45 @@ import "./chat.css";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import db from "../firebase";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
 
 const Chat = () => {
   const { roomId } = useParams();
   const [roomName, setRoomName] = useState("");
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    db.collection("rooms")
-      .doc(roomId)
-      .onSnapshot((snapshot) => {
-        setRoomName(snapshot.data().name);
-      });
+    if (roomId) {
+      db.collection("rooms")
+        .doc(roomId)
+        .onSnapshot((snapshot) => {
+          setRoomName(snapshot.data().name);
+        });
+
+      db.collection("rooms")
+        .doc(roomId)
+        .collection("message")
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) => {
+          setMessages(snapshot.docs.map((doc) => doc.data()));
+        });
+    }
   }, [roomId]);
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+    if (input === "") {
+      alert("Please enter your message");
+    }
+    db.collection("rooms").doc(roomId).collection("message").add({
+      name: "Abhishek Kumar",
+      message: input,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    setInput("");
+  };
 
   return (
     <div className="chat">
@@ -50,31 +77,32 @@ const Chat = () => {
 
       {/* Chat body */}
       <div className="chat-body">
-        <p className="chat-message chat-receiver">
-          <span className="chat-name">Abhishek Kumar</span>
-          This is the dummy message
-          <span className="chat-time">12:40 PM</span>
-        </p>
-
-        <p className="chat-message chat-receiver">
-          <span className="chat-name">Abhishek Kumar</span>
-          This is the dummy message
-          <span className="chat-time">12:40 PM</span>
-        </p>
-
-        <p className="chat-message">
-          <span className="chat-name">Abhishek Kumar</span>
-          This is the dummy message
-          <span className="chat-time">12:40 PM</span>
-        </p>
+        {messages.map((message) => {
+          return (
+            <p className="chat-message chat-receiver">
+              <span className="chat-name">{message.name}</span>
+              {message.message}
+              <span className="chat-time">
+                {new Date(
+                  message.timestamp?.seconds * 1000
+                ).toLocaleTimeString()}
+              </span>
+            </p>
+          );
+        })}
       </div>
 
       {/* Chat footer  */}
       <div className="chat-footer">
         <EmojiEmotionsIcon />
         <AttachFileIcon />
-        <form>
-          <input type="text" placeholder="Type your message" />
+        <form onSubmit={sendMessage}>
+          <input
+            type="text"
+            placeholder="Type your message"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
         </form>
         <MicNoneRoundedIcon />
       </div>
