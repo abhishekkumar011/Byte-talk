@@ -5,17 +5,34 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import MicNoneRoundedIcon from "@mui/icons-material/MicNoneRounded";
 import "./chat.css";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import db from "../firebase";
 
 const Chat = () => {
+  const { roomId } = useParams();
+  const [roomName, setRoomName] = useState("");
+
+  useEffect(() => {
+    db.collection("rooms")
+      .doc(roomId)
+      .onSnapshot((snapshot) => {
+        setRoomName(snapshot.data().name);
+      });
+  }, [roomId]);
+
   return (
     <div className="chat">
       {/* Chat header  */}
       <div className="chat-header">
-        <Avatar />
-
         <div className="header-info">
-          <h3>Room Name</h3>
-          <p>Last seen</p>
+          <Avatar
+            src={"https://api.dicebear.com/6.x/avataaars/svg?seed=$%7Bseed-6D"}
+          />
+          <div>
+            <h3>{roomName}</h3>
+            <p>Last seen</p>
+          </div>
         </div>
 
         <div className="header-right">
