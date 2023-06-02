@@ -10,12 +10,14 @@ import { useEffect, useState } from "react";
 import db from "../firebase";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
+import { useStateValue } from "../../context/StateProvider";
 
 const Chat = () => {
   const { roomId } = useParams();
   const [roomName, setRoomName] = useState("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [{user}, dispatch] = useStateValue();
 
   useEffect(() => {
     if (roomId) {
@@ -41,7 +43,7 @@ const Chat = () => {
       alert("Please enter your message");
     }
     db.collection("rooms").doc(roomId).collection("message").add({
-      name: "Abhishek Kumar",
+      name: user.displayName,
       message: input,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -77,9 +79,9 @@ const Chat = () => {
 
       {/* Chat body */}
       <div className="chat-body">
-        {messages.map((message) => {
+        {messages.map((message,key) => {
           return (
-            <p className="chat-message chat-receiver">
+            <p className={`chat-message ${user.displayName==message.name && "chat-receiver" }`} key={key}>
               <span className="chat-name">{message.name}</span>
               {message.message}
               <span className="chat-time">
