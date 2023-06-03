@@ -17,7 +17,7 @@ const Chat = () => {
   const [roomName, setRoomName] = useState("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [{user}, dispatch] = useStateValue();
+  const [{ user }, dispatch] = useStateValue();
 
   useEffect(() => {
     if (roomId) {
@@ -60,7 +60,11 @@ const Chat = () => {
           />
           <div>
             <h3>{roomName}</h3>
-            <p>Last seen</p>
+            <p>
+              {new Date(
+                messages[messages.length - 1]?.timestamp?.seconds * 1000
+              ).toLocaleTimeString()}
+            </p>
           </div>
         </div>
 
@@ -79,9 +83,14 @@ const Chat = () => {
 
       {/* Chat body */}
       <div className="chat-body">
-        {messages.map((message,key) => {
+        {messages.map((message, key) => {
           return (
-            <p className={`chat-message ${user.displayName==message.name && "chat-receiver" }`} key={key}>
+            <p
+              className={`chat-message ${
+                user.displayName === message.name && "chat-receiver"
+              }`}
+              key={key}
+            >
               <span className="chat-name">{message.name}</span>
               {message.message}
               <span className="chat-time">

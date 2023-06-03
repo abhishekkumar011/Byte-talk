@@ -11,12 +11,16 @@ const SidebarChat = ({ id, name, addnewchat }) => {
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
 
-    db.collection("rooms").doc(id).collection("message").orderBy("timestamp","desc").onSnapshot(snapshot => {
-      setLastMessage(snapshot.docs.map(doc => doc.data()))
-    })
+    db.collection("rooms")
+      .doc(id)
+      .collection("message")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setLastMessage(snapshot.docs.map((doc) => doc.data()));
+      });
   }, [id]);
 
-  console.log(lastMessage)
+  console.log(lastMessage);
 
   const createChat = () => {
     const room = prompt("Enter the room name.");
@@ -32,7 +36,7 @@ const SidebarChat = ({ id, name, addnewchat }) => {
       <h2>Add new chat</h2>
     </div>
   ) : (
-    <Link to={`/room/${id}`} style={{textDecoration: 'none',color: 'black'}}>
+    <Link to={`/room/${id}`} style={{ textDecoration: "none", color: "black" }}>
       <div className="sidebar-chat">
         <Avatar
           src={`https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}`}
